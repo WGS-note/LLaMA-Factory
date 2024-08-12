@@ -1,3 +1,44 @@
+fork ~
+
+
+
+\- [x] 添加对 channel loss 的支持。
+
+
+
+channel loss：不同数据 channel 各自的 loss。也就是说假设 1 个 batch 有 100 条数据：40条 en，30 条 cn， 20条 code， 10 条 domain，那么就绘制四条不同 channel 的 loss 曲线和一条总的 total loss 曲线。
+
+
+
+yaml内容：
+
+```yaml
+report_to: tensorboard
+logging_dir: /home/wangguisen/projects/LLaMA-Factory/weights/tensbox_demo2/runs   # tensorboard 日志位置
+use_channel_loss: true      # 是否使用 channel loss
+# channel_loss: [0, 1, 2]   # 显式指定 channel 和 数据集名的对应关系，优先级高于 use_channel_loss
+```
+
+
+
+> 启动 tensorboard，见：https://wangguisen.blog.csdn.net/article/details/140992106
+
+
+
+例图如下：
+
+
+
+
+
+----
+
+----
+
+----
+
+
+
 ![# LLaMA Factory](assets/logo.png)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/hiyouga/LLaMA-Factory?style=social)](https://github.com/hiyouga/LLaMA-Factory/stargazers)
