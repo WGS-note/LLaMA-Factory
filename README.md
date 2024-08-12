@@ -2,11 +2,11 @@ fork ~
 
 
 
-\- [x] 添加对 channel loss 的支持。
+\+ [x] 添加对 `channel loss` 的支持。
 
 
 
-channel loss：不同数据 channel 各自的 loss。也就是说假设 1 个 batch 有 100 条数据：40条 en，30 条 cn， 20条 code， 10 条 domain，那么就绘制四条不同 channel 的 loss 曲线和一条总的 total loss 曲线。
+`channel loss`：不同数据 channel 各自的 loss。也就是说假设 1 个 batch 有 100 条数据：40条 en，30 条 cn， 20条 code， 10 条 domain，那么就绘制四条不同 channel 的 loss 曲线和一条总的 total loss 曲线。
 
 
 
