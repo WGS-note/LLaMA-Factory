@@ -1,8 +1,6 @@
 fork ~
 
-
-
-\+ [x] 添加对 `channel loss` 的支持。
+- [x] 添加对 `channel loss` 的支持。
 
 
 
@@ -14,9 +12,13 @@ yaml内容：
 
 ```yaml
 report_to: tensorboard
-logging_dir: /home/wangguisen/projects/LLaMA-Factory/weights/tensbox_demo2/runs   # tensorboard 日志位置
-use_channel_loss: true      # 是否使用 channel loss
-# channel_loss: [0, 1, 2]   # 显式指定 channel 和 数据集名的对应关系，优先级高于 use_channel_loss
+# tensorboard 日志位置
+logging_dir: /home/wangguisen/projects/LLaMA-Factory/weights/tensbox_demo2/runs   
+
+# 是否使用 channel loss
+use_channel_loss: true      
+# 显式指定 channel 和 数据集名的对应关系，优先级高于 use_channel_loss
+# channel_loss: [0, 1, 2]   
 ```
 
 
