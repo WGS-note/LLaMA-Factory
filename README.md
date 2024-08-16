@@ -1,6 +1,10 @@
 fork ~
 
 - [x] 添加对 `channel loss` 的支持。
+  - [x] 支持单卡 + `logging_steps` + `gradient_accumulation_steps`。
+  - [x] 支持多卡 + `logging_steps` + `gradient_accumulation_steps`。
+  - [x] 记录到 `Tensorboard`。
+  - [ ] 多`batch_size` DEBUG。
 
 
 
@@ -30,7 +34,7 @@ CUDA_VISIBLE_DEVICES=0 llamafactory-cli train yamls/channel_loss_demo.yaml
 
 
 
-> 启动 tensorboard，见：https://wangguisen.blog.csdn.net/article/details/140992106
+> 启动 Tensorboard，见：https://wangguisen.blog.csdn.net/article/details/140992106
 
 
 
@@ -47,6 +51,49 @@ CUDA_VISIBLE_DEVICES=0 llamafactory-cli train yamls/channel_loss_demo.yaml
 
 
 `多GPU`：
+
+
+
+
+
+
+
+----
+
+----
+
+----
+
+关于环境：
+
+```shell
+wget -c https://repo.anaconda.com/miniconda/Miniconda3-py311_24.4.0-0-Linux-x86_64.sh
+chmod +x Miniconda3-py311_24.4.0-0-Linux-x86_64.sh
+
+./Miniconda3-py311_24.4.0-0-Linux-x86_64.sh -b -f -p /home/wangguisen/miniconda3
+
+vim .bashrc
+export PATH="/home/wangguisen/miniconda3/bin:$PATH"
+source ~/.bashrc
+```
+
+```
+conda create -n llama_factory python=3.11.9
+
+source activate llama_factory
+```
+
+```
+conda install pytorch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 pytorch-cuda=12.1 -c pytorch -c nvidia
+```
+
+```
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+```
+huggingface-cli download --resume-download Qwen2-0.5B-Instruct --local-dir /home/chenliang/models/Qwen2-0.5B-Instruct
+```
 
 
 
