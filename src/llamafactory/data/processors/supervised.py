@@ -55,9 +55,6 @@ def _encode_supervised_example(
 
     encoded_pairs = template.encode_multiturn(tokenizer, messages, system, tools)
     total_length = 1 if template.efficient_eos else 0
-    if mask_history:
-        encoded_pairs = encoded_pairs[::-1]  # high priority for last turns
-
     for turn_idx, (source_ids, target_ids) in enumerate(encoded_pairs):
         if total_length >= cutoff_len:
             break
@@ -69,22 +66,18 @@ def _encode_supervised_example(
 
         if train_on_prompt:
             source_label = source_ids
-        elif template.efficient_eos:
+        elif turn_idx != 0 and template.efficient_eos:
             source_label = [tokenizer.eos_token_id] + [IGNORE_INDEX] * (source_len - 1)
         else:
             source_label = [IGNORE_INDEX] * source_len
 
-        if mask_history and turn_idx != 0:  # train on the last turn only
+        if mask_history and turn_idx != len(encoded_pairs) - 1:
             target_label = [IGNORE_INDEX] * target_len
         else:
             target_label = target_ids
 
-        if mask_history:  # reversed sequences
-            input_ids = source_ids + target_ids + input_ids
-            labels = source_label + target_label + labels
-        else:
-            input_ids += source_ids + target_ids
-            labels += source_label + target_label
+        input_ids += source_ids + target_ids
+        labels += source_label + target_label
 
     if template.efficient_eos:
         input_ids += [tokenizer.eos_token_id]
@@ -103,6 +96,11 @@ def preprocess_supervised_dataset(
     # build inputs with format `<bos> X Y <eos>` and labels with format `<ignore> ... <ignore> Y <eos>`
     # for multiturn examples, we only mask the prompt part in each prompt-response pair.
     model_inputs = {"input_ids": [], "attention_mask": [], "labels": []}
+
+    # TODO: support channel loss
+    if data_args.channel_loss:
+        model_inputs["channels"] = []
+
     if processor is not None:
         model_inputs["pixel_values"] = []
         if hasattr(processor, "image_seq_length"):  # paligemma models
@@ -132,6 +130,14 @@ def preprocess_supervised_dataset(
             model_inputs["pixel_values"].append(get_pixel_values(examples["images"][i], processor))
             if hasattr(processor, "image_seq_length"):  # paligemma models
                 model_inputs["token_type_ids"].append(get_paligemma_token_type_ids(len(input_ids), processor))
+
+        # TODO: ↑
+        if data_args.channel_loss:
+            model_inputs["channels"].append(examples["channels"][i])
+
+        # print("examples['prompt'][i]: ", examples["prompt"][i])
+        # print("examples['channels'][i]: ", examples["channels"][i])
+        # exit()
 
     return model_inputs
 
@@ -207,9 +213,13 @@ def preprocess_packed_supervised_dataset(
     return model_inputs
 
 
-def print_supervised_dataset_example(example: Dict[str, List[int]], tokenizer: "PreTrainedTokenizer") -> None:
+def print_supervised_dataset_example(example: Dict[str, List[int]], tokenizer: "PreTrainedTokenizer", data_args: Optional["DataArguments"]) -> None:
     valid_labels = list(filter(lambda x: x != IGNORE_INDEX, example["labels"]))
     print("input_ids:\n{}".format(example["input_ids"]))
     print("inputs:\n{}".format(tokenizer.decode(example["input_ids"], skip_special_tokens=False)))
     print("label_ids:\n{}".format(example["labels"]))
     print("labels:\n{}".format(tokenizer.decode(valid_labels, skip_special_tokens=False)))
+
+    if data_args.channel_loss:
+        print("channels:\n{}".format(example["channels"]))
+

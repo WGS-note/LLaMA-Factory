@@ -14,9 +14,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+import json
 
 from dataclasses import dataclass, field
-from typing import Literal, Optional
+from typing import Literal, Optional, List, Dict
 
 
 @dataclass
@@ -110,6 +112,16 @@ class DataArguments:
         metadata={"help": "Path to save or load the tokenized datasets."},
     )
 
+    # TODO: 【√】添加对 channel loss 的支持，数据额外加一个 channel 字段   (只改了 alpaca 数据格式)
+    channel_loss: Optional[List[int]] = field(
+        default=None,
+        metadata={"help": "List of integers, add support for channel loss."},
+    )
+    use_channel_loss: bool = field(
+        default=False,
+        metadata={"help": "Whether to use channel loss indices based on the dataset name."}
+    )
+
     def __post_init__(self):
         def split_arg(arg):
             if isinstance(arg, str):
@@ -142,5 +154,30 @@ class DataArguments:
         if self.streaming and self.max_samples is not None:
             raise ValueError("`max_samples` is incompatible with `streaming`.")
 
-        if self.mask_history and self.train_on_prompt:
-            raise ValueError("`mask_history` is incompatible with `train_on_prompt`.")
+        # TODO: ↑
+        if self.use_channel_loss and self.channel_loss is None:
+            self.channel_loss = self.get_default_channel_dict()   # json name: channel
+            self.file_add_channel()   # add channel to each json
+        elif self.channel_loss is not None:
+            self.use_channel_loss = False
+
+
+    def get_default_channel_dict(self) -> Dict[str, int]:
+        return {item: i for i, item in enumerate(self.dataset)}
+
+
+    def file_add_channel(self) -> None:
+        for ds_name in self.dataset:
+            file_name = os.path.join(self.dataset_dir, ds_name + ".json")
+
+            with open(file_name, "r", encoding="utf-8") as f:
+                ds = json.load(f)
+
+            for sample in ds:
+                sample["channel"] = self.channel_loss[ds_name]
+
+            with open(file_name, 'w', encoding="utf-8") as f:
+                json.dump(ds, f, ensure_ascii=False, indent=4)
+
+            print("[DEBUG] add channel to {}".format(file_name))
+

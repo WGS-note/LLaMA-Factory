@@ -1,0 +1,52 @@
+# 单节点多GPU
+
+# model
+# model_name_or_path: /home/wangguisen/models/Qwen1.5-14B-Chat
+model_name_or_path: /home/wangguisen/models/Qwen2-0.5B-Instruct
+# quantization_bit: 4
+# quantization_bit: 8
+
+# method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: all
+
+# dataset
+dataset: channel_test_semantic_20240808, channel_test_evaluation_good_20240808, test_evaluation_general_20240808
+template: qwen
+cutoff_len: 1024
+max_samples: 1000  # TODO
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+# output
+output_dir: /home/wangguisen/projects/LLaMA-Factory/weights/tensbox_demo2
+logging_steps: 5
+save_steps: 500
+plot_loss: true
+overwrite_output_dir: true
+
+
+report_to: tensorboard
+logging_dir: /home/wangguisen/projects/LLaMA-Factory/weights/tensbox_demo2/runs   # tensorboard 日志位置
+use_channel_loss: true    # 是否使用 channel loss
+# channel_loss: [0, 1, 2]   # 显式指定 channel 和 数据集名的对应关系，优先级高于 use_channel_loss
+
+
+# train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 30.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+fp16: true
+# max_grad_norm: 0.5
+ddp_timeout: 180000000
+
+# eval
+val_size: 0.1
+per_device_eval_batch_size: 1
+evaluation_strategy: steps
+eval_steps: 500

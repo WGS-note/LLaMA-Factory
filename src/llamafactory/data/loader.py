@@ -50,7 +50,9 @@ def _load_single_dataset(
     training_args: "Seq2SeqTrainingArguments",
 ) -> Union["Dataset", "IterableDataset"]:
     logger.info("Loading dataset {}...".format(dataset_attr))
+
     data_path, data_name, data_dir, data_files = None, None, None, None
+
     if dataset_attr.load_from in ["hf_hub", "ms_hub"]:
         data_path = dataset_attr.dataset_name
         data_name = dataset_attr.subset
@@ -63,7 +65,8 @@ def _load_single_dataset(
 
     elif dataset_attr.load_from == "file":
         data_files = []
-        local_path = os.path.join(data_args.dataset_dir, dataset_attr.dataset_name)
+        local_path = os.path.join(data_args.dataset_dir, dataset_attr.dataset_name)   # e.g. data/0_no_dialog_train_data_20240221.json
+
         if os.path.isdir(local_path):  # is directory
             for file_name in os.listdir(local_path):
                 data_files.append(os.path.join(local_path, file_name))
@@ -73,7 +76,7 @@ def _load_single_dataset(
                     raise ValueError("File types should be identical.")
         elif os.path.isfile(local_path):  # is file
             data_files.append(local_path)
-            data_path = FILEEXT2TYPE.get(local_path.split(".")[-1], None)
+            data_path = FILEEXT2TYPE.get(local_path.split(".")[-1], None)   # e.g. json
         else:
             raise ValueError("File {} not found.".format(local_path))
 
@@ -112,6 +115,7 @@ def _load_single_dataset(
             streaming=(data_args.streaming and (dataset_attr.load_from != "file")),
             trust_remote_code=True,
         )
+        # print("[DEBUG] ---------- \n", dataset[0])
 
     if data_args.streaming and (dataset_attr.load_from == "file"):  # faster than specifying streaming=True
         dataset = dataset.to_iterable_dataset()  # TODO: add num shards parameter
@@ -132,7 +136,41 @@ def _load_single_dataset(
         max_samples = min(data_args.max_samples, len(dataset))
         dataset = dataset.select(range(max_samples))
 
+    # # TODO: 添加 channel 字段
+    # if data_args.channel_loss:
+    #     dataset = dataset.map(lambda x: _add_channel(x, dataset_attr, data_args),
+    #                           batched=True,
+    #                           num_proc=data_args.preprocessing_num_workers,
+    #                           desc="Add channel field",)
+
+    # print("[DEBUG] dataset[0] \n", dataset[0])
+    # print("[DEBUG] align_dataset()[:3] \n", align_dataset(dataset, dataset_attr, data_args, training_args)[:3])
+    # exit()
+
     return align_dataset(dataset, dataset_attr, data_args, training_args)
+
+
+def _add_channel(batch, dataset_attr, data_args):
+    """添加 channel 字段
+    """
+    channel_value = data_args.channel_loss.get(dataset_attr.dataset_name.split(".json")[0])
+
+    if not _all_keys_have_same_len(batch):
+        raise ValueError("All keys in the batch should have the same length.")
+
+    batch["channels"] = [channel_value] * len(batch["instruction"])
+    return batch
+
+
+def _all_keys_have_same_len(batch):
+    batch = dict(batch)
+    first_key = next(iter(batch))
+    reference_length = len(batch[first_key])
+
+    for key in batch.keys():
+        if len(batch[key]) != reference_length:
+            return False
+    return True
 
 
 def _get_merged_dataset(
@@ -168,6 +206,7 @@ def _get_preprocessed_dataset(
     if dataset is None:
         return None
 
+    # TODO: support channel loss, model_inputs 里加 channels key
     preprocess_func, print_function = get_preprocess_and_print_func(
         data_args, stage, template, tokenizer, processor, do_generate=(training_args.predict_with_generate and is_eval)
     )
@@ -204,6 +243,7 @@ def get_dataset(
     processor: Optional["ProcessorMixin"] = None,
 ) -> "DatasetModule":
     template = get_template_and_fix_tokenizer(tokenizer, data_args.template, data_args.tool_format)
+    # train_on_prompt: 是否在提示上禁用掩码
     if data_args.train_on_prompt and template.efficient_eos:
         raise ValueError("Current template does not support `train_on_prompt`.")
 
@@ -229,11 +269,16 @@ def get_dataset(
             raise ValueError("Turn off `streaming` when saving dataset to disk.")
 
     # Load and preprocess dataset
+    # 多进程处理数据，get_dataset_list 获得 dataset 的属性，load_single_dataset，加载并对齐数据，合并 dataset
     with training_args.main_process_first(desc="load dataset"):
         dataset = _get_merged_dataset(data_args.dataset, model_args, data_args, training_args, stage)
         eval_dataset = _get_merged_dataset(data_args.eval_dataset, model_args, data_args, training_args, stage)
 
+    print("[DEBUG] len dataset: ", len(dataset))
+
+    # 预处理 dataset to ids
     with training_args.main_process_first(desc="pre-process dataset"):
+        # TODO: support channel loss, model_inputs 里添加 channels
         dataset = _get_preprocessed_dataset(
             dataset, data_args, training_args, stage, template, tokenizer, processor, is_eval=False
         )
@@ -272,5 +317,7 @@ def get_dataset(
             dataset_module["train_dataset"] = dataset_dict["train"]
         if "validation" in dataset_dict:
             dataset_module["eval_dataset"] = dataset_dict["validation"]
+
+        print("[DEBUG] dataset_module: ", dataset_module)
 
         return dataset_module

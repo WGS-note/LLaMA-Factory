@@ -1,0 +1,47 @@
+# 单机单卡
+
+# model
+model_name_or_path: /home/wangguisen/models/Qwen1.5-14B-Chat
+quantization_bit: 4
+# quantization_bit: 8
+
+# method
+stage: sft
+do_train: true
+finetuning_type: lora
+# lora_target: q_proj,v_proj
+lora_target: all
+
+# ddp
+ddp_timeout: 1800
+
+# dataset
+# dataset: 0_no_dialog_train_data_20240221, 1_dialog_train_data_20240304, 2_dialog_train_data_20240508
+dataset: 0_no_dialog_train_data_20240221
+template: qwen
+cutoff_len: 1024
+max_samples: 20
+val_size: 0.1
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+# output
+output_dir: /home/wangguisen/projects/LLaMA-Factory/weights/
+logging_steps: 10
+save_steps: 100
+plot_loss: true
+overwrite_output_dir: true
+
+# train
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 8
+learning_rate: 0.0001
+num_train_epochs: 3.0
+lr_scheduler_type: cosine
+warmup_steps: 0.1
+fp16: true
+
+# eval
+per_device_eval_batch_size: 4
+evaluation_strategy: steps
+eval_steps: 500

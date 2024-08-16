@@ -8,9 +8,10 @@ fork ~
 
 
 
-yaml内容：
+`yaml`增加内容：
 
 ```yaml
+remove_unused_columns: false  # 不删除 channels 字段
 report_to: tensorboard
 # tensorboard 日志位置
 logging_dir: /home/wangguisen/projects/LLaMA-Factory/weights/tensbox_demo2/runs   
@@ -23,11 +24,31 @@ use_channel_loss: true
 
 
 
+```shell
+CUDA_VISIBLE_DEVICES=0 llamafactory-cli train yamls/channel_loss_demo.yaml
+```
+
+
+
 > 启动 tensorboard，见：https://wangguisen.blog.csdn.net/article/details/140992106
 
 
 
 例图如下：
+
+`logging_step = 1`：
+
+
+
+
+
+`logging_step = 10`：
+
+
+
+`多GPU`：
+
+
 
 
 

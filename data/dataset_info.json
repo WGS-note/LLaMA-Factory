@@ -266,13 +266,6 @@
     "hf_hub_url": "Magpie-Align/Magpie-Pro-300K-Filtered",
     "formatting": "sharegpt"
   },
-  "magpie_ultra": {
-    "hf_hub_url": "argilla/magpie-ultra-v0.1",
-    "columns": {
-      "prompt": "instruction",
-      "response": "response"
-    }
-  },
   "web_instruct": {
     "hf_hub_url": "TIGER-Lab/WebInstructSub",
     "columns": {
@@ -578,5 +571,90 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+
+  "0_no_dialog_train_data_20240221": {
+    "file_name": "0_no_dialog_train_data_20240221.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "history": "history"
+    }
+  },
+  "1_dialog_train_data_20240304": {
+    "file_name": "1_dialog_train_data_20240304.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "history": "history"
+    }
+  },
+  "2_dialog_train_data_20240508": {
+    "file_name": "2_dialog_train_data_20240508.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "history": "history"
+    }
+  },
+  "test_2_dialog_train_data_20240508": {
+    "file_name": "test_2_dialog_train_data_20240508.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "history": "history"
+    }
+  },
+  "channel_test_evaluation_general_20240808": {
+    "file_name": "channel_test_evaluation_general_20240808.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "channel_test_evaluation_good_20240808": {
+    "file_name": "channel_test_evaluation_good_20240808.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "channel_test_semantic_20240808": {
+    "file_name": "channel_test_semantic_20240808.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "evaluation_general_20240808": {
+    "file_name": "evaluation_general_20240808.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "evaluation_good_20240808": {
+    "file_name": "evaluation_good_20240808.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "semantic_20240808": {
+    "file_name": "semantic_20240808.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
   }
 }

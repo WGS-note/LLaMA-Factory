@@ -1,0 +1,19 @@
+### model
+model_name_or_path: /home/wangguisen/models/Qwen1.5-14B-Chat
+# adapter_name_or_path: ./weights/qwen_weights_demo/
+
+### method
+finetuning_type: lora
+
+### dataset
+task: mmlu
+split: test
+template: fewshot
+lang: en
+n_shot: 5
+
+### output
+save_dir: saves/llama3-8b/lora/eval
+
+### eval
+batch_size: 4

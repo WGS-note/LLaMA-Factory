@@ -43,7 +43,8 @@ def run_sft(
 ):
     tokenizer_module = load_tokenizer(model_args)
     tokenizer = tokenizer_module["tokenizer"]
-    dataset_module = get_dataset(model_args, data_args, training_args, stage="sft", **tokenizer_module)
+    # TODO: 【√】添加对 channel loss 的支持，dataset 添加 channels key
+    dataset_module = get_dataset(model_args, data_args, training_args, stage="sft", **tokenizer_module)   # 代码剖析：https://blog.csdn.net/weixin_41046245/article/details/136622342
     model = load_model(tokenizer, model_args, finetuning_args, training_args.do_train)
 
     if getattr(model, "is_quantized", False) and not training_args.do_train:
@@ -71,12 +72,17 @@ def run_sft(
         metric_module["compute_metrics"] = ComputeAccuracy()
         metric_module["preprocess_logits_for_metrics"] = eval_logit_processor
 
+    # if data_args.channel_loss:
+    #     from transformers.integrations import TensorBoardCallback
+    #     callbacks.append(TensorBoardCallback())
+
     # Initialize our Trainer
     trainer = CustomSeq2SeqTrainer(
         model=model,
         args=training_args,
         finetuning_args=finetuning_args,
-        data_collator=data_collator,
+        data_args=data_args,              # TODO: 【√】添加对 channel loss 的支持   (只支持 sft 和 alpaca 数据格式)
+        data_collator=data_collator,      # TODO: 【√】设置 remove_unused_columns=false，确保有 channels key
         callbacks=callbacks,
         **dataset_module,
         **tokenizer_module,

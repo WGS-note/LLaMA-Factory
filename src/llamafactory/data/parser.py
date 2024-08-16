@@ -88,6 +88,8 @@ def get_dataset_list(dataset_names: Optional[Sequence[str]], dataset_dir: str) -
         try:
             with open(config_path, "r") as f:
                 dataset_info = json.load(f)
+                # print("[DEBUG] ", os.path.join(data_args.dataset_dir, DATA_CONFIG))   # data/dataset_info.json
+
         except Exception as err:
             if len(dataset_names) != 0:
                 raise ValueError("Cannot open {} due to {}.".format(config_path, str(err)))
@@ -95,6 +97,8 @@ def get_dataset_list(dataset_names: Optional[Sequence[str]], dataset_dir: str) -
             dataset_info = None
 
     dataset_list: List["DatasetAttr"] = []
+    # print("[DEBUG] dataset_names: ", dataset_names)   # e.g. [DEBUG] dataset_names:  ['0_no_dialog_train_data_20240221', '1_dialog_train_data_20240304']
+
     for name in dataset_names:
         if dataset_info is None:  # dataset_dir is ONLINE
             load_from = "ms_hub" if use_modelscope() else "hf_hub"
@@ -116,7 +120,7 @@ def get_dataset_list(dataset_names: Optional[Sequence[str]], dataset_dir: str) -
         elif "script_url" in dataset_info[name]:
             dataset_attr = DatasetAttr("script", dataset_name=dataset_info[name]["script_url"])
         else:
-            dataset_attr = DatasetAttr("file", dataset_name=dataset_info[name]["file_name"])
+            dataset_attr = DatasetAttr("file", dataset_name=dataset_info[name]["file_name"])   # 重写了 __repr__, e.g. 0_no_dialog_train_data_20240221.json
 
         dataset_attr.set_attr("formatting", dataset_info[name], default="alpaca")
         dataset_attr.set_attr("ranking", dataset_info[name], default=False)
@@ -147,6 +151,15 @@ def get_dataset_list(dataset_names: Optional[Sequence[str]], dataset_dir: str) -
             )
             for tag in tag_names:
                 dataset_attr.set_attr(tag, dataset_info[name]["tags"])
+
+        # print("[DEBUG] dataset_attr: ", dir(dataset_attr))
+        """
+        [DEBUG] dataset_attr:  ['__annotations__', '__class__', '__dataclass_fields__', '__dataclass_params__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+        '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__match_args__', '__module__', '__ne__',
+        '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__',
+        'assistant_tag', 'content_tag', 'dataset_name', 'file_sha1', 'folder', 'formatting', 'function_tag', 'history', 'images', 'load_from',
+        'messages', 'observation_tag', 'prompt', 'query', 'ranking', 'response', 'role_tag', 'set_attr', 'subset', 'system', 'system_tag', 'tools', 'user_tag']
+        """
 
         dataset_list.append(dataset_attr)
 

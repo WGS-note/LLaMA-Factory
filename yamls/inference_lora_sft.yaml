@@ -1,0 +1,9 @@
+model_name_or_path: /home/wangguisen/models/Qwen1.5-14B-Chat
+# adapter_name_or_path: ./weights/checkpoint-1500/
+adapter_name_or_path: ./weights/qwen_weights_demo/
+template: qwen
+finetuning_type: lora
+
+quantization_bit: 4
+
+# CUDA_VISIBLE_DEVICES=3 llamafactory-cli chat ./yamls/inference_lora_sft.yaml

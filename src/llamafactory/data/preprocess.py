@@ -71,14 +71,14 @@ def get_preprocess_and_print_func(
             )
         else:
             preprocess_func = partial(
-                preprocess_supervised_dataset,
+                preprocess_supervised_dataset,   # TODO: 【√】添加对 channel loss 的支持
                 template=template,
                 tokenizer=tokenizer,
                 processor=processor,
                 data_args=data_args,
             )
 
-        print_function = partial(print_supervised_dataset_example, tokenizer=tokenizer)
+        print_function = partial(print_supervised_dataset_example, tokenizer=tokenizer, data_args=data_args)
     elif stage == "rm":
         preprocess_func = partial(
             preprocess_pairwise_dataset,
