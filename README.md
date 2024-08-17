@@ -5,6 +5,7 @@ fork ~
   - [x] 支持多卡 + `logging_steps` + `gradient_accumulation_steps`。
   - [x] 记录到 `Tensorboard`。
   - [ ] 多`batch_size` DEBUG。
+  - [ ] 多机多卡 DEBUG。
 
 
 
@@ -40,19 +41,39 @@ CUDA_VISIBLE_DEVICES=0 llamafactory-cli train yamls/channel_loss_demo.yaml
 
 例图如下：
 
-`logging_step = 1`：
+`logging_step = 1 & gradient_accumulation_steps = 8`：
+
+![](./assets/1_1.png)
+
+![](./assets/1_2.png)
+
+![](./assets/1_3.png)
+
+![](./assets/1_4.png)
 
 
 
+`logging_step = 10 & gradient_accumulation_steps = 8`：
+
+![](./assets/2_1.png)
+
+![](./assets/2_2.png)
+
+![](./assets/2_3.png)
+
+![](./assets/2_4.png)
 
 
-`logging_step = 10`：
 
+`多GPU & logging_step = 5 & gradient_accumulation_steps = 8`：
 
+![](./assets/3_1.png)
 
-`多GPU`：
+![](./assets/3_2.png)
 
+![](./assets/3_3.png)
 
+![](./assets/3_4.png)
 
 
 
@@ -89,13 +110,13 @@ conda install pytorch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 pytorch-cuda=
 
 ```
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install -e .
 ```
 
 ```
-huggingface-cli download --resume-download Qwen2-0.5B-Instruct --local-dir /home/chenliang/models/Qwen2-0.5B-Instruct
+huggingface-cli download --resume-download Qwen/Qwen2-0.5B-Instruct --local-dir /home/chenliang/models/Qwen2-0.5B-Instruct
 ```
-
-
 
 
 

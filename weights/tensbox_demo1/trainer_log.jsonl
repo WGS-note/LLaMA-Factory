@@ -1,0 +1,6 @@
+{"current_steps": 2, "total_steps": 10, "loss": 2.0788, "learning_rate": 9.698463103929542e-05, "epoch": 2.0, "percentage": 20.0, "elapsed_time": "0:00:04", "remaining_time": "0:00:17", "throughput": "0.00", "total_tokens": 0}
+{"current_steps": 4, "total_steps": 10, "loss": 1.895, "learning_rate": 7.500000000000001e-05, "epoch": 4.0, "percentage": 40.0, "elapsed_time": "0:00:08", "remaining_time": "0:00:12", "throughput": "0.00", "total_tokens": 0}
+{"current_steps": 6, "total_steps": 10, "loss": 1.6235, "learning_rate": 4.131759111665349e-05, "epoch": 6.0, "percentage": 60.0, "elapsed_time": "0:00:12", "remaining_time": "0:00:08", "throughput": "0.00", "total_tokens": 0}
+{"current_steps": 8, "total_steps": 10, "loss": 1.5554, "learning_rate": 1.1697777844051105e-05, "epoch": 8.0, "percentage": 80.0, "elapsed_time": "0:00:16", "remaining_time": "0:00:04", "throughput": "0.00", "total_tokens": 0}
+{"current_steps": 10, "total_steps": 10, "loss": 1.501, "learning_rate": 0.0, "epoch": 10.0, "percentage": 100.0, "elapsed_time": "0:00:20", "remaining_time": "0:00:00", "throughput": "0.00", "total_tokens": 0}
+{"current_steps": 10, "total_steps": 10, "epoch": 10.0, "percentage": 100.0, "elapsed_time": "0:00:21", "remaining_time": "0:00:00", "throughput": "0.00", "total_tokens": 0}

@@ -147,7 +147,7 @@ def _load_single_dataset(
     # print("[DEBUG] align_dataset()[:3] \n", align_dataset(dataset, dataset_attr, data_args, training_args)[:3])
     # exit()
 
-    return align_dataset(dataset, dataset_attr, data_args, training_args)
+    return align_dataset(dataset, dataset_attr, data_args, training_args)  # TODO: 添加 channel 字段
 
 
 def _add_channel(batch, dataset_attr, data_args):
@@ -188,7 +188,7 @@ def _get_merged_dataset(
         if (stage == "rm" and dataset_attr.ranking is False) or (stage != "rm" and dataset_attr.ranking is True):
             raise ValueError("The dataset is not applicable in the current training stage.")
 
-        datasets.append(_load_single_dataset(dataset_attr, model_args, data_args, training_args))
+        datasets.append(_load_single_dataset(dataset_attr, model_args, data_args, training_args))  # TODO: 添加 channel 字段
 
     return merge_dataset(datasets, data_args, seed=training_args.seed)
 
@@ -271,6 +271,7 @@ def get_dataset(
     # Load and preprocess dataset
     # 多进程处理数据，get_dataset_list 获得 dataset 的属性，load_single_dataset，加载并对齐数据，合并 dataset
     with training_args.main_process_first(desc="load dataset"):
+        # TODO: ↓
         dataset = _get_merged_dataset(data_args.dataset, model_args, data_args, training_args, stage)
         eval_dataset = _get_merged_dataset(data_args.eval_dataset, model_args, data_args, training_args, stage)
 
