@@ -60,7 +60,7 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
         if os.path.exists(self.args.logging_dir):
             shutil.rmtree(self.args.logging_dir)
 
-        # 梯度累积，training_step 会调用多次，手动维护一个累积字典，用于画图和源码对齐
+        # 梯度累积，training_step 会调用多次，手动维护一个累积字典，用于画图和源码的对齐
         if self.data_args.channel_loss:
             self.cumulative_dict = {
                 "cumulative_loss": 0.0,
